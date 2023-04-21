@@ -30,15 +30,7 @@ const creatAcount = (req, res, next) => {
         }
 
         )
-    // userModel.find()
-    //     .then(data => {
-    //         res.json({
-    //             message: 'tim thay',
-    //             data: data
-    //         })
-    //     }).catch(err => {
-    //         res.status(500).json('khong tim thay')
-    //     })
+
 
 }
 module.exports = creatAcount;
