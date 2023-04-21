@@ -24,6 +24,6 @@ app.use('/api/', router)
 app.use((err, req, res, next) => {
     res.status(500).json(err)
 })
-app.listen(port, function () {
+app.listen(process.env.PORT, function () {
     console.log('servering running')
 })
