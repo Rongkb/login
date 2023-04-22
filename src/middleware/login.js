@@ -1,6 +1,6 @@
 var { AcountModel, userModel } = require('../model/account')
 
-var checkLogin = (req, res, next) => {
+var login = (req, res, next) => {
     var username = req.body.username
     var password = req.body.password
 
@@ -10,6 +10,7 @@ var checkLogin = (req, res, next) => {
     })
         .then(data => {
             if (data) {
+                req.data = data
                 // res.json('dang nhap thanh cong')
                 next()
             } else {
@@ -18,8 +19,11 @@ var checkLogin = (req, res, next) => {
             }
         })
         .catch(err => {
-            res.status(500).json('loi server')
+            next({
+                message: 'loi phan check login',
+                status: err
+            })
         })
 
 }
-module.exports = checkLogin;
+module.exports = login;
