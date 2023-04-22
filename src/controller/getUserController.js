@@ -1,7 +1,7 @@
 var { AcountModel, userModel } = require('../model/account')
 
 const getUser = (req, res, next) => {
-    const PAGE_SIZE = 4
+    const PAGE_SIZE = 2
     console.log(req.query.page)
     var page = req.query.page;
     if (page) {
@@ -16,7 +16,19 @@ const getUser = (req, res, next) => {
             .skip(skip)
             .limit(PAGE_SIZE)
             .then(data => {
-                res.json(data)
+                AcountModel.countDocuments({})
+                    .then(total => {
+                        console.log(total)
+                        var tongSoPage = Math.ceil(total / PAGE_SIZE)
+                        res.json({
+                            total: total,
+                            tongSoPage: tongSoPage,
+                            data: data
+                        })
+                    })
+                    .catch(err => {
+                        console.log(err)
+                    })
             })
             .catch(err => {
                 console.log(err)
@@ -24,7 +36,10 @@ const getUser = (req, res, next) => {
     } else {
         AcountModel.find({})
             .then(data => {
-                res.send(data)
+                res.send({
+                    message: "getall data",
+                    data: data
+                })
             })
             .catch(err => {
                 console.log(err)
