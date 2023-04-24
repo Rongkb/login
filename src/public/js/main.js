@@ -53,7 +53,7 @@ function nextPage() {
             }
         })
         .catch(err => {
-            conaole.log(err)
+            console.log(err)
         })
 }
 
@@ -72,6 +72,6 @@ function previousPage() {
             }
         })
         .catch(err => {
-            conaole.log(err)
+            console.log(err)
         })
 }

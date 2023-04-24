@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="./static/js/jquery-3.6.4.min.js"></script>
+</head>
+
+<body>
+    username: <input type="text" id="username"><br>
+    password: <input type="text" id="password">
+    <button onclick="register()">register</button>
+</body>
+<script>
+    function register() {
+        $.ajax({
+            url: './api/register',
+            type: 'POST',
+            data: {
+                username: $('#username').val(),
+                password: $('#password').val()
+            }
+        })
+            .then(data => {
+                // alert('dang ky thanh cong')
+                console.log(' dang ky thanh cong', data)
+
+            })
+            .catch(err => {
+                console.log("vui long nhap thpng tin dang ky")
+            })
+    }
+</script>
+
+</html>

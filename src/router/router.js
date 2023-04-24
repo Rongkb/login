@@ -6,7 +6,7 @@ var getUser = require('../controller/getUserController')
 
 router.get('/user', getUser)
 router.post('/register', AcountController)
-router.get('/register', AcountController)
+// router.get('/register', AcountController)
 // router.post('/login', (req, res, next) => {
 //     res.json('heloo')
 // })

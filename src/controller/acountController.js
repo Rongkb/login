@@ -1,35 +1,45 @@
 var { AcountModel, userModel } = require('../model/account')
 
 
-const creatAcount = (req, res, next) => {
-    console.log(req.body)
-    var username = req.body.username;
-    var password = req.body.password
-    AcountModel.findOne({
-        username: username
-    }).then(data => {
-        if (data) {
-            res.json('tai khoan da ton tai vui long tao tai khoan khac')
-        } else {
-            return AcountModel.create({
-                username: username,
-                password: password
+const creatAcount = async (req, res, next) => {
+    try {
+        var username = req.body.username;
+        var password = req.body.password
+
+        if (!username || !password) {
+            return next({
+                errCode: 01,
+                message: 'vui long dien day du thong tin'
             })
         }
-    })
-        .then(data => {
-            res.json({
-                message: 'tao tai khoan thanh cong',
-                data: data
+        var userIsExits = await AcountModel.findOne({
+            username: username
+        })
+        if (userIsExits) {
+            return next({
+                errCode: 01,
+                message: 'tai khoan da ton tai vui long chon tai khoan khac'
             })
+        }
+        const isCreate = await AcountModel.create({
+            username: username,
+            password: password
+        })
+        res.send({
+            errCode: 0,
+            message: 'dang ky thanh cong',
+            data: isCreate
         })
 
-        .catch(err => {
-            // res.status(500).json('loi ben sercver')
-            next(err)
-        }
 
-        )
+    } catch (error) {
+        next({
+            errCode: 01,
+            message: 'loi roi'
+        })
+    }
+
+
 
 
 }

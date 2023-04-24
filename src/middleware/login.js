@@ -1,4 +1,5 @@
 var { AcountModel, userModel } = require('../model/account')
+var jwt = require('jsonwebtoken')
 
 var login = (req, res, next) => {
     var username = req.body.username
@@ -9,10 +10,14 @@ var login = (req, res, next) => {
         password: password
     })
         .then(data => {
+            console.log(data)
             if (data) {
-                req.data = data
-                // res.json('dang nhap thanh cong')
-                next()
+                var token = jwt.sign({ payload: data }, '12345',)
+                res.send({
+                    message: 'gui token thanh cong',
+                    token: token
+                })
+                // next()
             } else {
                 res.status(300).json('tai khoan hoac mat khau khong dung')
                 // next('loi')
