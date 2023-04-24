@@ -47,8 +47,10 @@
             }
         })
             .then(data => {
-                alert('dang nhap thanh cong')
+                // alert('dang nhap thanh cong')
                 setCookie('token', data.token, 1)
+                console.log('dang nhap thanh cong')
+                window.location.href = './private'
             })
             .catch(err => {
                 alert('tai khoan khong dung1')

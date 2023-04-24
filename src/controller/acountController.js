@@ -16,7 +16,7 @@ const creatAcount = async (req, res, next) => {
             username: username
         })
         if (userIsExits) {
-            return next({
+            return res.status(300).json({
                 errCode: 01,
                 message: 'tai khoan da ton tai vui long chon tai khoan khac'
             })

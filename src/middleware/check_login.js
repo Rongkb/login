@@ -6,6 +6,7 @@ function check_login(req, res, next) {
         var token = req.cookies.token
         var ketQua = jwt.verify(token, '12345')
         if (ketQua) {
+            req.data = token
             next()
         }
     } catch (err) {

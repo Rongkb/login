@@ -42,7 +42,11 @@ app.get('/register', (req, res, next) => {
 
 
 app.get('/private', check_login, (req, res, next) => {
-    res.send('wellcome private')
+
+    res.send({
+        errCode: 0,
+        data: req.data
+    })
 })
 
 app.use(bodyParser.urlencoded({ extended: false }))
