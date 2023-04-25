@@ -7,15 +7,17 @@ var login = require('./src/middleware/login')
 var check_login = require('./src/middleware/check_login')
 var jwt = require('jsonwebtoken')
 var cookieParser = require('cookie-parser')
-// const cors = require('cors')
+var passport = require('passport')
+var LocalStrategy = require('passport-local').Strategy;
 
 require('dotenv').config()
 const port = process.env.PORT || 8081
 app.use(cookieParser())
 require('./src/helper/connection_multi_mongodb')
-var bodyParser = require('body-parser')
+var bodyParser = require('body-parser');
+const { AcountModel } = require('./src/model/account');
 
-// app.use('/static', express.static(path.join(__dirname, 'public')))
+
 app.use('/static', express.static(path.join(__dirname, 'src/public')))
 
 app.use((req, res, next) => {
@@ -24,10 +26,81 @@ app.use((req, res, next) => {
     res.header(`Access-Control-Allow-Headers`, `Content-Type`);
     next();
 })
-// app.use(cors())
+
 
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
+
+
+// passport.use(new LocalStrategy(
+//     function (username, password, done) {
+//         console.log(username, password)
+//         AcountModel.findOne({
+//             username: username,
+//             password: password
+//         })
+//             .then(data => {
+//                 if (!data) done(null, false)
+//                 done(nul, data)
+//             })
+//             .catch(err => {
+//                 done(err)
+//             })
+
+//     }))
+
+
+// app.post('/passport', function (req, res, next) {
+//     passport.authenticate('local', function (err, user) {
+//         console.log(err)
+//         if (err) { return next(err) }
+//         if (!user) { return res.json('username va password khong hop le') }
+//         req.user = user
+//         jwt.sign({ payload: user }, '123', function (err, data) {
+//             if (err) return res.status(500).json('loi server')
+//             return res.json({
+//                 message: 'gui tu passport',
+//                 payload: data
+//             })
+//         })
+//     }
+//     )
+// })
+
+passport.use(new LocalStrategy(
+    function (username, password, done) {
+        User.findOne({ username: username }, function (err, user) {
+            if (err) { return done(err); }
+            if (!user) { return done(null, false); }
+            if (!user.verifyPassword(password)) { return done(null, false); }
+            return done(null, user);
+        });
+    }
+));
+
+app.post('/login',
+    passport.authenticate('local', { failureRedirect: '/login' }),
+    function (req, res) {
+        res.redirect('/');
+    });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 app.get('/', (req, res, next) => {
     res.sendFile(path.join(__dirname, './src/view/home.html'))

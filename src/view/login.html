@@ -12,7 +12,15 @@
 <body>
     username: <input type="text" id="username"><br>
     password: <input type="text" id="password">
-    <button onclick="login()">login</button>
+    <button onclick="login()">login</button><br>
+    --------------------------
+    passport:<br>
+    <form action="./login" method="POST">
+        name: <input type='text' name="username"><br>
+        password:<input type='text' name="password"><br>
+        <button type='submit'>login</button>
+    </form>
+
 </body>
 <script>
     function setCookie(cname, cvalue, exdays) {
@@ -39,7 +47,7 @@
     }
     function login() {
         $.ajax({
-            url: './login',
+            url: './passport',
             type: 'POST',
             data: {
                 username: $('#username').val(),
@@ -48,9 +56,9 @@
         })
             .then(data => {
                 // alert('dang nhap thanh cong')
-                setCookie('token', data.token, 1)
+                // setCookie('token', data.token, 1)
                 console.log('dang nhap thanh cong')
-                window.location.href = './private'
+                // window.location.href = './private'
             })
             .catch(err => {
                 alert('tai khoan khong dung1')
