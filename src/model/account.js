@@ -5,7 +5,11 @@ const { testConnection, userConnection } = require('../helper/connection_multi_m
 
 const AcountSchema = new Schema({
     username: String,
-    password: String
+    password: String,
+    refreshToken: {
+        type: String,
+        default: null
+    }
 },
     {
         collection: 'account'

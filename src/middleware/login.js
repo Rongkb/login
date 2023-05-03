@@ -1,6 +1,24 @@
 var { AcountModel, userModel } = require('../model/account')
 var jwt = require('jsonwebtoken')
 
+
+
+let generateToken = data => {
+    var token = jwt.sign({ payload: data }, '12345', { expiresIn: '60s' });
+    var refreshToken = jwt.sign({ payload: data }, '12345', { expiresIn: '1h' })
+    return { token, refreshToken }
+}
+const updateRefreshToken = (data, refreshToken) => {
+    AcountModel.findOneAndUpdate({ username: data.username }, { refreshToken: '3' })
+        .then(data => {
+            // console.log(data)
+            return res.json('luu refreshToken thanh cong')
+        })
+        .catch(err => {
+            console.log('loi luu refresh token')
+        })
+}
+
 var login = (req, res, next) => {
     var username = req.body.username
     var password = req.body.password
@@ -10,12 +28,15 @@ var login = (req, res, next) => {
         password: password
     })
         .then(data => {
-            console.log(data)
+            console.log('check data truyen vao: ', data)
             if (data) {
-                var token = jwt.sign({ payload: data }, '12345',)
+                var token = generateToken(data)
+                updateRefreshToken(data, token.refreshToken)
+                // console.log("data sau khi da luu vao db", data)
                 res.send({
                     message: 'gui token thanh cong',
                     token: token
+
                 })
                 // next()
             } else {
