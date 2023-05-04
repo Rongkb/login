@@ -4,8 +4,9 @@ function check_login(req, res, next) {
     console.log(req.cookies)
     try {
         var token = req.cookies.token
-        var ketQua = jwt.verify(token, '12345')
-        if (ketQua) {
+        var decoded = jwt.verify(token, '12345')
+        if (decoded) {
+            req.decoded = decoded
             req.data = token
             next()
         }

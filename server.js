@@ -3,7 +3,7 @@ var app = express();
 var router = require('./src/router/router')
 var routerUser = require('./src/router/acount')
 const path = require('path')
-var login = require('./src/middleware/login')
+var { login, generateToken, updateRefreshToken } = require('./src/middleware/login')
 var check_login = require('./src/middleware/check_login')
 var jwt = require('jsonwebtoken')
 var cookieParser = require('cookie-parser')
@@ -32,60 +32,6 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
 
-// passport.use(new LocalStrategy(
-//     function (username, password, done) {
-//         console.log(username, password)
-//         AcountModel.findOne({
-//             username: username,
-//             password: password
-//         })
-//             .then(data => {
-//                 if (!data) done(null, false)
-//                 done(nul, data)
-//             })
-//             .catch(err => {
-//                 done(err)
-//             })
-
-//     }))
-
-
-// app.post('/passport', function (req, res, next) {
-//     passport.authenticate('local', function (err, user) {
-//         console.log(err)
-//         if (err) { return next(err) }
-//         if (!user) { return res.json('username va password khong hop le') }
-//         req.user = user
-//         jwt.sign({ payload: user }, '123', function (err, data) {
-//             if (err) return res.status(500).json('loi server')
-//             return res.json({
-//                 message: 'gui tu passport',
-//                 payload: data
-//             })
-//         })
-//     }
-//     )
-// })
-
-// passport.use(new LocalStrategy(
-//     function (username, password, done) {
-//         User.findOne({ username: username }, function (err, user) {
-//             if (err) { return done(err); }
-//             if (!user) { return done(null, false); }
-//             if (!user.verifyPassword(password)) { return done(null, false); }
-//             return done(null, user);
-//         });
-//     }
-// ));
-
-// app.post('/login',
-//     passport.authenticate('local', { failureRedirect: '/login' }),
-//     function (req, res) {
-//         res.redirect('/');
-//     });
-
-
-
 
 app.get('/', (req, res, next) => {
     res.sendFile(path.join(__dirname, './src/view/home.html'))
@@ -94,10 +40,46 @@ app.get('/login', (req, res, next) => {
     res.sendFile(path.join(__dirname, './src/view/login.html'))
 })
 app.post('/login', login)
+app.delete('/loguot', check_login, async (req, res, next) => {
+    console.log(req.decoded)
+    const user = await AcountModel.findOne({
+        username: req.decoded.username
+    })
+    console.log(user)
+    updateRefreshToken(user, null)
+
+    res.json('logout')
+})
 app.get('/register', (req, res, next) => {
     res.sendFile(path.join(__dirname, './src/view/register.html'))
 })
+app.post('/token', (req, res, next) => {
+    const refreshToken = req.body.refreshToken
+    // console.log('refershtoken tu server', refreshToken)
+    if (!refreshToken) return res.json('phia client de mat ma rft roi con dau')
 
+    const user = AcountModel.findOne({
+        refreshToken: refreshToken
+
+    })
+    if (!user) return res.json('token bi gia mao roi')
+
+    try {
+        const decoded = jwt.verify(refreshToken, '12345')
+        if (!decoded) return res.json('refreshtoken het han roi')
+        // console.log('decoded: ', decoded)
+        const tokens = generateToken(user)
+        generateToken(user, tokens.refreshToken)
+        res.json({
+            message: 'tao moi token thanh cong',
+            tokens: tokens
+        })
+
+    } catch (error) {
+        console.log('loi tu lay token moi', err)
+    }
+
+})
 
 app.get('/private', check_login, (req, res, next) => {
 
@@ -114,7 +96,7 @@ app.use('/user/', routerUser)
 app.use('/api/', router)
 app.use((err, req, res, next) => {
     res.status(500).json({
-        message: " thong bao loi ",
+        message: " thong bao loi tu server ",
         status: err
     })
 })

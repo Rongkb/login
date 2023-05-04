@@ -4,18 +4,18 @@ var jwt = require('jsonwebtoken')
 
 
 let generateToken = data => {
-    var token = jwt.sign({ payload: data }, '12345', { expiresIn: '60s' });
-    var refreshToken = jwt.sign({ payload: data }, '12345', { expiresIn: '1h' })
+    var { _id, username } = data;
+    var token = jwt.sign({ _id, username }, '12345', { expiresIn: '15s' });
+    var refreshToken = jwt.sign({ _id, username }, '12345', { expiresIn: '20s' })
     return { token, refreshToken }
 }
 const updateRefreshToken = (data, refreshToken) => {
-    AcountModel.findOneAndUpdate({ username: data.username }, { refreshToken: '3' })
+    AcountModel.findOneAndUpdate({ username: data.username }, { refreshToken: refreshToken })
         .then(data => {
-            // console.log(data)
-            return res.json('luu refreshToken thanh cong')
+            return console.log('luu refreshToken thanh cong', data)
         })
         .catch(err => {
-            console.log('loi luu refresh token')
+            console.log('loi luu refresh token', err)
         })
 }
 
@@ -52,4 +52,4 @@ var login = (req, res, next) => {
         })
 
 }
-module.exports = login;
+module.exports = { login, generateToken, updateRefreshToken };

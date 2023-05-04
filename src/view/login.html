@@ -20,6 +20,10 @@
         password:<input type='text' name="password"><br>
         <button type='submit'>login</button>
     </form>
+    -------------------------------
+    refreshToken: <button onclick="refreshToken()">rfToken</button><br>
+    -------------------------------
+    logout: <button onclick="logout()">logout</button>
 
 </body>
 <script>
@@ -56,12 +60,52 @@
         })
             .then(data => {
                 // alert('dang nhap thanh cong')
-                setCookie('token', data.token.token, 1)
+                setCookie('token', data.token.token)
+                localStorage.setItem('refreshToken', data.token.refreshToken);
                 console.log('dang nhap thanh cong', data)
                 // window.location.href = './private'
             })
             .catch(err => {
                 alert('tai khoan khong dung1')
+            })
+    }
+
+    function refreshToken() {
+        const refreshToken = localStorage.getItem('refreshToken');
+        if (!refreshToken) return console.log('ban da mat ma refreshtoken')
+        $.ajax({
+            url: './token',
+            type: 'POST',
+            data: {
+                refreshToken: refreshToken
+            }
+        })
+            .then(data => {
+                console.log('data tu phia client', data)
+                setCookie('token', data.tokens.token)
+                localStorage.setItem('refreshToken', data.tokens.refreshToken);
+            })
+            .catch(err => {
+                console.log('thong bao loi tu client', err)
+                localStorage.removeItem('refreshToken');
+                document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'
+
+            })
+    }
+    function logout() {
+        $.ajax({
+            url: './loguot',
+            type: 'DELETE'
+        })
+            .then(data => {
+                console.log('logout thanh cong')
+                localStorage.removeItem('refreshToken');
+                document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'
+            })
+            .catch(err => {
+                console.log('loi roi')
+                // window.location.href = '/login'
+
             })
     }
 </script>
